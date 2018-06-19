@@ -18,10 +18,26 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/timestamp/:date_string?", function (req, res) {
+  
+  let inputString = req.params.date_string;
+  let regDate = /\d{4}\-\d{2}\-\d{2}/;
+  let regInteger = /^\+?[1-9][\d]*$/;
+  let date;
+   
+  if (inputString === undefined) date = new Date();
+  if (regDate.exec(inputString)) date = new Date(inputString);
+  if (regInteger.exec(inputString)) date = new Date(parseInt(inputString));
+  if (date === undefined) {
+    date = {"error" : "Invalid Date" }
+    res.json(date);
+  } else {
+    let output = {};
+    output.unix = date.getTime();
+    output.utc = date.toUTCString();
+    res.json(output);
+  }
 });
 
 
